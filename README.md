@@ -56,6 +56,7 @@ Consistency + Practice = Strong Logic 💡
 This repository contains class practice codes and logic-building exercises.
 
 Assignment solutions are maintained separately in another repository.
+https://github.com/ShreyaViKu/LB0100067_Assignments.git
 
 👩‍💻 Author
 
