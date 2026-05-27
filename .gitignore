@@ -1,0 +1,48 @@
+# =========================
+# C / C++
+# =========================
+
+# Executable files
+*.exe
+*.out
+
+# Object files
+*.o
+*.obj
+
+# Libraries
+*.dll
+*.so
+*.a
+
+# Debug files
+*.dSYM/
+*.stackdump
+
+# =========================
+# Java
+# =========================
+
+# Compiled Java files
+*.class
+
+# JAR/WAR files
+*.jar
+*.war
+*.ear
+
+# JVM crash logs
+hs_err_pid*
+
+# =========================
+# VS Code
+# =========================
+
+.vscode/
+
+# =========================
+# Temporary files
+# =========================
+
+*.tmp
+*.log
