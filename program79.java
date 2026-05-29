@@ -34,3 +34,5 @@ class program79
         
     }
 }
+
+//Time Complexity : O(N)
