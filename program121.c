@@ -35,7 +35,7 @@ int main()
     //Step 4 : Use the memory (Logic)
     Display(Brr, iLength);
 
-    //Step 5 : Reallocate memory 
+    //Step 5 : Deallocate memory 
     free(Brr);
 
     return 0;

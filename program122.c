@@ -38,7 +38,7 @@ int main()
 
     printf("Summation of array elements is : %d",iRet);
 
-    //Step 5 : Reallocate memory 
+    //Step 5 : Deallocate memory 
     free(Brr);
 
     return 0;
