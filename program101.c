@@ -21,3 +21,5 @@ int main()
 
     return 0;
 }
+
+// TC : O(1)   static memory allocation of array 
