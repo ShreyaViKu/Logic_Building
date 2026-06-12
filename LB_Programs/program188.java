@@ -16,7 +16,7 @@ class program188
 
        while(iCnt <= iNo)
        {
-            for(iCount = 1;iCount <= 3; iCount++ )
+            for(iCount = 1;(iCount <= 3) && (iCnt <= iNo); iCount++ )
             {
                 System.out.print(ch+"\t");
                 iCnt++;

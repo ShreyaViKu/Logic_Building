@@ -16,24 +16,20 @@ class program188X
 
        for(iCnt = 1; iCnt <= iNo; iCnt++)
        {
-    
-                System.out.print(ch+"\t");
-                if(iCnt %3 == 0)
+            System.out.print(ch+"\t");
+            if(iCnt %3 == 0)
+            {
+                if(ch == '*')
                 {
-                    if(ch == '*')
-                    {
-                        ch = '#';
-                    }
-                    else
-                    {
-                        ch = '*';
-                    }
-
+                    ch = '#';
                 }
-                
-            
-            
-       }
+                else
+                {
+                    ch = '*';
+                }
+
+            }  
+        }
         
         System.out.println();
     }
