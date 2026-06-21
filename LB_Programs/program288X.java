@@ -1,13 +1,11 @@
 /*
-iRow = 6
-iCol = 6
+iRow = 4
+iCol = 4
 
-*
-*  *
-*     *
-*        *
-*           *
-*  *  *  *  *  *
+2  4  6  8  10
+1  3  5  7  9
+2  4  6  8  10
+1  3  5  7  9
 
 
 */
@@ -17,35 +15,29 @@ class Pattern
 {
     public void Display(int iRow, int iCol)
     {
-        int i = 0, j = 0;
+        int i = 0, j = 0, iCnt = 0;
 
-        // filter for diagonal pattern
-        if(iRow != iCol)
-        {
-            System.out.println("Invalid parameters");
-            System.out.println("Number of rows and columns should be same");
-            return;
-        }
-
-        
         for(i = 1; i <= iRow; i++)
         {
-            for(j = 1; j<= i; j++)
+            if(i % 2 != 0)
             {
-                if(i == j || j == 1 || i == iRow)
+                for(j = 1, iCnt = 2; j <= iCol; j++, iCnt += 2)
                 {
-                    System.out.print("#\t");
+                    System.out.print(iCnt + "\t");
                 }
-                else
+            }
+            else
+            {
+                for(j = 1, iCnt = 1; j <= iCol; j++, iCnt += 2)
                 {
-                    System.out.print(" \t");
+                    System.out.print(iCnt + "\t");
                 }
             }
             System.out.println();
         }
     }
 }
-class program230
+class program288X
 {
     public static void main(String A[])
     {

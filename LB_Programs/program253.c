@@ -1,0 +1,34 @@
+// count frequency of non case sensitive vowels
+
+#include<stdio.h>
+
+int countVowels(const char *str)
+{
+    int iCount = 0;
+
+    while(*str != '\0')
+    {
+        if(*str == 'a' || *str == 'e' || *str == 'i' || *str == 'o' || *str == 'u'||
+           *str == 'A' || *str == 'E' || *str == 'I' || *str == 'O' || *str == 'U')
+        {
+            iCount++;
+        }
+        str++;
+    }
+
+    return iCount;
+}
+int main()
+{
+    char Arr[50] = {'\0'};  
+    int iRet = 0;    
+
+    printf("enter string :\n");
+    scanf("%[^'\n']s",Arr);       
+    
+    iRet = countVowels(Arr);
+
+    printf("frequency is : %d\n ",iRet);
+
+    return 0;
+}
