@@ -22,7 +22,7 @@ class program268
         System.out.println("enter string : ");
         str = sobj.nextLine();
 
-        StringX strobj = new StringX();
+        program280 strobj = new program280();
 
         strobj.Display(str);
     }

@@ -1,10 +1,25 @@
 /*
-J3 for capital letter in string frequency
+J3 for capital and small letter in string frequency
 */
 import java.util.*;
 
 class StringX
 {
+    public int CountSamll(String str)
+    {
+        int i = 0,iCount = 0;
+
+        for(i = 0; i < str.length(); i++)
+        {
+            if(str.charAt(i) >= 'a' && str.charAt(i) <= 'z')
+            {
+                iCount++;
+            }
+        }
+        return iCount;
+        
+    }
+
     public int CountCapital(String str)
     {
         int i = 0,iCount = 0;
@@ -39,5 +54,9 @@ class program271
         iRet = strobj.CountCapital(data);
 
         System.out.println("Capital characters are : "+ iRet);
+
+        iRet = strobj.CountSamll(data);
+
+        System.out.println("Small characters are : "+ iRet);
     }
 }
