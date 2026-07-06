@@ -1,5 +1,6 @@
 /*
-left shift operator using for loop = for(iCnt = 1; iCnt < 32; iCnt++)
+left shift operator using for loop =
+ for(iCnt = 1; iCnt < 32; iCnt++)
 */
 #include<stdio.h>
 
