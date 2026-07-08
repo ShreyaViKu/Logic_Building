@@ -1,3 +1,4 @@
+
 /*
 DeleteAtPos function
 */
@@ -96,6 +97,7 @@ void InsertAtPos(PPNODE first, int iNo, int iPos)
         printf("Invalid position\n");
         return;
     }
+    
     else if(iPos == 1)
     {
         InsertFirst(first, iNo);
@@ -117,6 +119,7 @@ void InsertAtPos(PPNODE first, int iNo, int iPos)
         {
             temp = temp->next;
         }
+
         newn->next = temp->next;
         temp->next = newn;
 
@@ -171,7 +174,6 @@ void DeleteLast(PPNODE first)
         free(temp->next);
 
         temp->next = NULL;
-
     }
 }
 
