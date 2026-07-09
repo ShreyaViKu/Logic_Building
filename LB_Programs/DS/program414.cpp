@@ -1,5 +1,6 @@
 /*
-DeleteAtPos function  Shell creation
+Options for user for operations called Shell creation
+using Switch cases
 */
 
 #include<iostream>
