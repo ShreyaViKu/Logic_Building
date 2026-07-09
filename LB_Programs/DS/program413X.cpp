@@ -1,6 +1,6 @@
 /*
 Doubly Linear LinkedList
-all 8 functions are defined for DLL
+using iCount instead first in loops
 */
 
 #include<iostream>
@@ -48,14 +48,13 @@ DoublyLL :: DoublyLL()
 void DoublyLL :: Display()
 {
     PNODE temp = NULL;
-    temp = this->first;
+    int i = 0;
 
     cout<<"\nNULL <=> ";
 
-    while(temp != NULL)
+    for(i = 1,temp = this->first; i<= iCount; i++,temp = temp->next)
     {
         cout<<"| "<<temp->data<<" | <=> ";
-        temp = temp->next;
     }
     cout<<"NULL\n";
 }
@@ -74,7 +73,7 @@ void DoublyLL :: InsertFirst(int iNo)
     newn->next = NULL;
     newn->prev = NULL;
 
-    if(NULL == this->first)
+    if(iCount == 0)
     {
         this->first = newn;
     }
@@ -94,19 +93,19 @@ void DoublyLL :: InsertLast(int iNo)
     newn = new NODE;
     PNODE temp = NULL;
 
+    int i = 0;
+
     newn->data = iNo;
     newn->next = NULL;
     newn->prev = NULL;
 
-    if(NULL == this->first)
+    if(iCount == 0)
     {
         this->first = newn;
     }
     else
     {
-        temp = this->first;
-
-        while(temp->next != NULL)
+        for(i = 1,temp = this->first; i < iCount; i++)
         {
             temp = temp->next;
         }
@@ -162,11 +161,11 @@ void DoublyLL :: InsertAtPos(int iNo, int iPos)
 
 void DoublyLL :: DeleteFirst()
 {
-    if(this->first == NULL)
+    if(this->iCount == 0)
     {
         return;
     }
-    else if(this->first->next == NULL)
+    else if(this->iCount == 1)
     {
         delete this->first;
         this->first = NULL;
@@ -185,11 +184,11 @@ void DoublyLL :: DeleteLast()
 {
     PNODE temp = NULL;
 
-    if(this->first == NULL)
+    if(this->iCount == 0)
     {
         return;
     }
-    else if(this->first->next == NULL)
+    else if(this->iCount == 1)
     {
         delete this->first;
         this->first = NULL;
