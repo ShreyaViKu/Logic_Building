@@ -1,28 +1,24 @@
 /*
- SinglyLL DeleteAtPos function 
+SinglyLL Generic CPP without typedef
 */
 
 #include<iostream>
 using namespace std;
 
 #pragma pack(1)
-struct node 
+struct node
 {
     int data;
     struct node * next;
 };
 
-typedef struct node NODE;
-typedef struct node * PNODE;
-
+#pragma pack(1)
 class SinglyLL
 {
-    private :
-
-        PNODE first;
+    private:
+        struct node * first;
         int iCount;
-    public :
-
+    public:
         SinglyLL();
         void Display();
         int Count();
@@ -32,19 +28,17 @@ class SinglyLL
         void DeleteFirst();
         void DeleteLast();
         void DeleteAtPos(int iPos);
-
 };
 
 SinglyLL :: SinglyLL()
 {
     this->first = NULL;
     this->iCount = 0;
-}
 
+}
 void SinglyLL :: Display()
 {
-    PNODE temp = NULL;
-
+    struct node * temp = NULL;
     temp = this->first;
 
     while(temp != NULL)
@@ -52,24 +46,22 @@ void SinglyLL :: Display()
         cout<<"| "<<temp->data<<" | -> ";
         temp = temp->next;
     }
-    cout<<"NULL"<<endl;
+    cout<<"NULL\n";
 }
 
 int SinglyLL :: Count()
 {
-    return this->iCount;
+    return iCount;
 }
 
 void SinglyLL :: InsertFirst(int iNo)
 {
-    PNODE newn = NULL;
-
-    newn = new NODE;
-
+    struct node * newn = NULL;
+    newn = new struct node;
     newn->data = iNo;
     newn->next = NULL;
 
-    if(this->first == NULL)
+    if(NULL == this->first)
     {
         this->first = newn;
     }
@@ -78,17 +70,15 @@ void SinglyLL :: InsertFirst(int iNo)
         newn->next = this->first;
         this->first = newn;
     }
-
     this->iCount++;
 }
 
 void SinglyLL :: InsertLast(int iNo)
 {
-    PNODE newn = NULL;
-    PNODE temp = NULL;
+    struct node * temp = NULL;
+    struct node * newn = NULL;
 
-    newn = new NODE;
-
+    newn = new struct node;
     newn->data = iNo;
     newn->next = NULL;
 
@@ -99,63 +89,54 @@ void SinglyLL :: InsertLast(int iNo)
     else
     {
         temp = this->first;
-
         while(temp->next != NULL)
         {
             temp = temp->next;
         }
         temp->next = newn;
     }
-
     this->iCount++;
 }
 
 void SinglyLL :: InsertAtPos(int iNo, int iPos)
 {
     int i = 0;
-    PNODE temp = NULL;
-    PNODE newn = NULL;
-    
+    struct node * temp = NULL;
+    struct node * newn = NULL;
+
     if((iPos < 1) || (iPos > iCount+1))
     {
-        cout<<"Invalid Position\n";
+        cout<<"Invalid position\n";
         return;
     }
-    
     if(iPos == 1)
     {
-        this->InsertFirst(iNo);
+        InsertFirst(iNo);
     }
     else if(iPos == iCount+1)
     {
-        this->InsertLast(iNo);
+        InsertLast(iNo);
     }
     else
     {
-        newn = new NODE;
-
+        temp = this->first;
+        newn = new struct node;
         newn->data = iNo;
         newn->next = NULL;
-
-        temp = this->first;
-
-        for(i = 1; i < iPos-1; i++)
+        
+        for(i=1; i<iPos-1; i++)
         {
             temp = temp->next;
         }
-
         newn->next = temp->next;
-
         temp->next = newn;
 
         this->iCount++;
-
     }
 }
-
 void SinglyLL :: DeleteFirst()
 {
-    PNODE temp = NULL;
+    struct node * temp = NULL;
 
     if(this->first == NULL)
     {
@@ -163,83 +144,70 @@ void SinglyLL :: DeleteFirst()
     }
     else if(this->first->next == NULL)
     {
-        delete(this->first);
+        free(this->first);
         this->first = NULL;
     }
     else
     {
         temp = this->first;
-
-        this->first= this->first->next;
-
+        this->first = this->first->next;
         delete temp;
     }
-
     this->iCount--;
 }
-
 void SinglyLL :: DeleteLast()
 {
-    PNODE temp = NULL;
-
+    struct node * temp = NULL;
+    
     if(this->first == NULL)
     {
         return;
     }
     else if(this->first->next == NULL)
     {
-        delete(this->first);
+        free(this->first);
         this->first = NULL;
     }
     else
     {
         temp = this->first;
-
         while(temp->next->next != NULL)
         {
             temp = temp->next;
         }
-
         delete temp->next;
         temp->next = NULL;
     }
-
     this->iCount--;
 }
-
 void SinglyLL :: DeleteAtPos(int iPos)
 {
     int i = 0;
-    PNODE temp = NULL;
-    PNODE target = NULL;
-    
+    struct node * temp = NULL;
+    struct node * target = NULL;
+
     if((iPos < 1) || (iPos > iCount))
     {
-        cout<<"Invalid Position\n";
+        cout<<"Invalid position\n";
         return;
     }
-    
     if(iPos == 1)
     {
-        this->DeleteFirst();
+        DeleteFirst();
     }
     else if(iPos == iCount)
     {
-        this->DeleteLast();
+        DeleteLast();
     }
     else
     {
         temp = this->first;
-
-        for(i = 1; i < iPos-1; i++)
+        for(i=1; i<iPos-1; i++)
         {
             temp = temp->next;
         }
-
         target = temp->next;
-
-        temp->next = target->next;
-
+        temp->next = temp->next->next;
         delete target;
 
         this->iCount--;
