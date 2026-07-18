@@ -1,5 +1,5 @@
 /*
-Stack in CPP Push function
+Stack in CPP POP function
 */
 #include<iostream>
 using namespace std;
@@ -38,28 +38,51 @@ void Stack :: push(int iNo)
     newn->data = iNo;
     newn->next = NULL;
 
-    if(this->first == NULL)
-    {
-        this->first = newn;
-    }
-    else
-    {
-        newn->next = this->first;
-        this->first = newn;
-    }
+    newn->next = this->first;
+    this->first = newn;
+
     this->iCount++;
 
 }   
 int Stack :: pop()
 {
-    return 0;
+    struct node * temp = NULL;
+    temp = this->first;
+    int iValue = 0;
+
+    if(this->first == NULL)
+    {
+        cout<<"Stack is empty\n";
+        return -1;
+    }
+    else
+    {
+        iValue = this->first->data;
+        temp = this->first;
+        this->first = this->first->next;
+        delete temp;
+
+        this->iCount--;
+
+        return iValue;
+    }
+    
 }             
 int Stack :: peep()
 {
     return 0;
 }            
 void Stack :: Display()
-{}
+{
+    struct node * temp = NULL;
+    temp = this->first;
+
+    while(temp != NULL)
+    {
+        cout<<"| "<<temp->data<<" |\n";
+        temp = temp->next;
+    }
+}
 int Stack :: Count()
 {
     return this->iCount;
@@ -75,6 +98,14 @@ int main()
     sobj.push(51);
     sobj.push(101);
 
+    sobj.Display();
+    iRet = sobj.Count();
+    cout<<"Number of elements are : "<<iRet<<endl;
+
+    iRet = sobj.pop();
+    cout<<"Popped element is : "<<iRet<<endl;
+
+    sobj.Display();
     iRet = sobj.Count();
     cout<<"Number of elements are : "<<iRet<<endl;
 

@@ -1,5 +1,5 @@
 /*
-Stack in CPP Push function
+Stack in CPP Display function
 */
 #include<iostream>
 using namespace std;
@@ -38,15 +38,9 @@ void Stack :: push(int iNo)
     newn->data = iNo;
     newn->next = NULL;
 
-    if(this->first == NULL)
-    {
-        this->first = newn;
-    }
-    else
-    {
-        newn->next = this->first;
-        this->first = newn;
-    }
+    newn->next = this->first;
+    this->first = newn;
+
     this->iCount++;
 
 }   
@@ -59,7 +53,16 @@ int Stack :: peep()
     return 0;
 }            
 void Stack :: Display()
-{}
+{
+    struct node * temp = NULL;
+    temp = this->first;
+
+    while(temp != NULL)
+    {
+        cout<<"| "<<temp->data<<" |\n";
+        temp = temp->next;
+    }
+}
 int Stack :: Count()
 {
     return this->iCount;
@@ -75,6 +78,7 @@ int main()
     sobj.push(51);
     sobj.push(101);
 
+    sobj.Display();
     iRet = sobj.Count();
     cout<<"Number of elements are : "<<iRet<<endl;
 
