@@ -1,7 +1,3 @@
-/*
-recursion in Display with Input frequency from user
-*/
-
 #include<stdio.h>
 
 void Display(int iNo)

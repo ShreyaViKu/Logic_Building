@@ -1,0 +1,47 @@
+/*
+read using buffer #define BUFFER_SIZE 100
+*/
+
+#include<stdio.h>
+#include<fcntl.h>   
+#include<unistd.h>   
+#include<string.h>
+
+#define BUFFER_SIZE 100
+
+int main()
+{
+    int fd = 0;  
+    int iRet = 0;
+    char Data[BUFFER_SIZE] = {'\0'};   
+
+    fd = open("Marvellous.txt",O_RDONLY); 
+
+    if(fd == -1)
+    {
+        printf("Unalble to Read file \n");
+    }
+    else
+    {
+        printf("File gets succssfully opened with %d\n",fd);
+
+        iRet = read(fd,Data,13);    
+
+        printf("%d of bytes successfully read\n",iRet);
+
+        printf("data from file is %s\n",Data);
+
+        // Buffer cleaning
+        
+        memset(Data,'\0',sizeof(Data));
+
+        iRet = read(fd,Data,3);    
+
+        printf("%d of bytes successfully read\n",iRet);
+
+        printf("data from file is %s\n",Data); 
+
+        close(fd);
+    }
+    return 0;
+}
