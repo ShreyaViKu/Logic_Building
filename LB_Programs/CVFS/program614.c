@@ -208,7 +208,7 @@ void CreateDILB()
         PINODE newn = NULL;
         newn = (PINODE)malloc(sizeof(INODE));
 
-        newn->FileName = '\0';
+        //newn->FileName = '\0';
         newn->ActualFileSize = 0;
         newn->FileSize = 0;
         newn->InodeNumber = i;

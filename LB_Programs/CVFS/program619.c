@@ -212,7 +212,7 @@ void CreateDILB()
         newn = (PINODE)malloc(sizeof(INODE));
 
         newn->InodeNumber = i;
-        strcpy(newn->FileName,'\0');
+        strcpy(newn->FileName,"\0");
         newn->ActualFileSize = 0;
         newn->FileSize = 0;
         newn->ReferenceCount = 0;
