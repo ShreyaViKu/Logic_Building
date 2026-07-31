@@ -120,6 +120,15 @@ int Count(PNODE first)
 
 }
 
+int CountX(PNODE first)
+{
+    if(first == NULL)
+    {
+        return 0;
+    }
+    return 1 + CountX(first->rchild) + CountX(first->lchild);
+}
+
 bool Search(PNODE first, int iNo)
 {
     bool bFlag = false;
@@ -170,6 +179,8 @@ int main()
     {
         printf("17 is not present in BST\n");
     }
+    iRet = Count(head);
+    printf("Number of Nodes are : %d\n",iRet);
     
     return 0;
 }
