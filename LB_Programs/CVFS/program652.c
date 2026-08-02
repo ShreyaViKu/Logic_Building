@@ -318,6 +318,32 @@ void ManPageDisplay(char Name[])
         printf("About : It is used to clear the terminal \n");
         printf("Usage : clear \n");
     }
+    else if(strcmp(Name,"creat") == 0 )
+    {
+        printf("About : It is used to Create the new file \n");
+        printf("Usage : Create File_name Permission \n");
+
+        printf("File name : name of file that we want to create\n");
+        printf("Permission : Permission of new file \n");
+
+        printf("Permission : Read -> 1\n");
+        printf("Permission : Write -> 2\n");
+        printf("Permission : Read + Write -> 3\n");
+    }
+    else if(strcmp(Name,"unlink") == 0 )
+    {
+        printf("About : It is used to Delete the existing file \n");
+        printf("Usage : unlink File_name \n");
+
+        printf("File name : name of file that we want to delete\n");
+    }
+    else if(strcmp(Name,"stat") == 0 )
+    {
+        printf("About : It is used to get information of specific file \n");
+        printf("Usage : stat File_name Permission \n");
+
+        printf("File name : name of file whose information should be fetched\n");
+    }
     else
     {
         printf("No manual entry found for %s\n",Name);
@@ -521,15 +547,277 @@ void LsFile_All()
 
 /////////////////////////////////////////////////////////////////////////
 //
+// Function Name : stat_file
+// Description :   it is used to Display all details of specific file
+// Input :         File name
+// Output :        exit status of function
+// Author :        Shreya Vilas Kulkarni
+// Date:           02/08/2026
+//
+/////////////////////////////////////////////////////////////////////////
+
+int stat_file(char name[])
+{
+    PINODE temp = NULL;
+    int permission = 0;
+    int Type = 0;
+
+    if(IsFileExist(name) == false)
+    {
+        return ERR_FILE_NOT_EXIST;
+    }
+
+    temp = head;
+
+    while(temp != NULL)
+    {
+        if(strcmp(temp->FileName,name) == 0)
+        {
+            printf("-----------------------------------------------------------------\n");
+            printf("-----------------Statistical Information of file-----------------\n");
+            printf("-----------------------------------------------------------------\n");
+
+            printf("File name : %s\n",temp->FileName);
+
+            printf("Inode number : %d\n",temp->InodeNumber);
+
+            printf("File size : %d\n",temp->FileSize);
+
+            printf("Actual file size : %d\n",temp->ActualFileSize);
+
+            printf("Reference count : %d\n",temp->ReferenceCount);
+
+            permission = temp->Premission;
+
+            if(permission == READ)
+            {
+                printf("File Permission : Read Only\n");
+            }
+            else if(permission == WRITE)
+            {
+                printf("File Permission : Write\n");
+            }
+            else if(permission == READ + WRITE)
+            {
+                printf("File Permission : Read + Write\n");
+            }
+
+            Type = temp->FileType;
+
+            if(Type == REGULARFILE)
+            {
+                printf("File Type : Regular File \n");
+            }
+            else if(Type == SPECIALFILE)
+            {
+                printf("File Type : Special File \n");
+            }
+
+            printf("-----------------------------------------------------------------\n");
+
+            break;
+        }
+        temp = temp->next;
+    }
+
+    return EXECUTE_SUCCESS;
+}
+
+/////////////////////////////////////////////////////////////////////////
+//
+// Function Name : unlink_file
+// Description :   it is used to Delete the specific file
+// Input :         File name
+// Output :        exit status of function
+// Author :        Shreya Vilas Kulkarni
+// Date:           02/08/2026
+//
+/////////////////////////////////////////////////////////////////////////
+
+int unlink_file(
+                  char name[]    // name of file
+               )
+{
+    int i = 0;
+
+    if(IsFileExist(name) == false)
+    {
+        return ERR_FILE_NOT_EXIST;
+    }
+
+    for(i = 0; i< MAXOPENFILES; i++)
+    {
+        if(uareaobj.UFDT[i] != NULL)
+        {
+            if(strcmp(uareaobj.UFDT[i]->ptrinode->FileName,name) == 0)
+            {
+                // Deallocate memory of buffer 
+                free(uareaobj.UFDT[i]->ptrinode->Buffer);
+                uareaobj.UFDT[i]->ptrinode->Buffer = NULL;
+
+                strcpy(uareaobj.UFDT[i]->ptrinode->FileName,"\0");
+
+                uareaobj.UFDT[i]->ptrinode->FileSize = 0;
+
+                uareaobj.UFDT[i]->ptrinode->ActualFileSize = 0;
+
+                uareaobj.UFDT[i]->ptrinode->ReferenceCount = 0;
+
+                uareaobj.UFDT[i]->ptrinode->FileType = 0;
+
+                uareaobj.UFDT[i]->ptrinode->Premission = 0;
+
+                // Deallocate memory of file table
+                free(uareaobj.UFDT[i]);
+
+                uareaobj.UFDT[i] = NULL;
+
+                superobj.FreeInodes++;   // free inode increment
+
+                break;   // IMPORTANT
+
+            }
+        }  // end of outer if
+        
+    }   // end of for
+
+    return EXECUTE_SUCCESS;
+
+} // end of unlink_file
+
+/////////////////////////////////////////////////////////////////////////
+//
+// Function Name : write_file
+// Description :   it is used to write the data into a specific file
+// Input :         File descriptor,
+//                 data that we want to write
+//                 size of data that we want to write
+// Output :        number of bytes successfully written
+// Author :        Shreya Vilas Kulkarni
+// Date:           02/08/2026
+//
+/////////////////////////////////////////////////////////////////////////
+
+int write_file(
+                 int fd,
+                 char* data,
+                 int size
+             )
+{
+    int offset = 0;
+
+    printf("File descriptor : %d\n",fd);
+    printf("Data that we want to write : %s\n",data);
+    printf("data size : %d\n",size);
+
+    // if fd is invalid
+    if(fd < 0 || fd > MAXOPENFILES)
+    {
+        return ERR_INVALID_PARAMETER;
+    }
+
+    // if permission to write is not there
+    if(uareaobj.UFDT[fd]->ptrinode->Premission < WRITE)
+    {
+        return ERR_PERMISSION_DENIED;
+    }
+
+    // check if the space is there or not
+    if((MAXFILESIZE - uareaobj.UFDT[fd]->WriteOffset) < size)
+    {
+        return ERR_INSUFFICIENT_SPACE;
+    }
+    
+
+    //offset = uareaobj.UFDT[fd]->ptrinode->Buffer + uareaobj.UFDT[fd]->WriteOffset;
+
+    strncpy(uareaobj.UFDT[fd]->ptrinode->Buffer + uareaobj.UFDT[fd]->WriteOffset,data,size);
+
+    // update the write offset
+    uareaobj.UFDT[fd]->WriteOffset = uareaobj.UFDT[fd]->WriteOffset + size;
+
+    // update actual file size
+    uareaobj.UFDT[fd]->ptrinode->ActualFileSize = uareaobj.UFDT[fd]->ptrinode->ActualFileSize + size;
+
+    return size;
+}
+
+/////////////////////////////////////////////////////////////////////////
+//
+// Function Name : read_file
+// Description :   it is used to read the data from a specific file
+// Input :         File descriptor,
+//                 address of empty buffer,
+//                 size of data that we want to read
+// Output :        number of bytes successfully read
+// Author :        Shreya Vilas Kulkarni
+// Date:           02/08/2026
+//
+/////////////////////////////////////////////////////////////////////////
+
+int read_file(  int fd,
+                char * data,
+                 int size
+             )
+{
+    // invalid fd
+    if(fd < 0 || fd > MAXOPENFILES)
+    {
+        return ERR_INVALID_PARAMETER;
+    }
+
+    if(size < 0)
+    {
+        return ERR_INVALID_PARAMETER;
+    }
+
+    if(uareaobj.UFDT[fd] == NULL)
+    {
+        return ERR_FILE_NOT_EXIST;
+    }
+
+    // filter for permission
+    if(uareaobj.UFDT[fd]->ptrinode->Premission < READ)
+    {
+        return ERR_PERMISSION_DENIED;
+    }
+
+    // insufficiant data
+    if((MAXFILESIZE - uareaobj.UFDT[fd]->ReadOffset) < size)
+    {
+        return ERR_INSUFFICIENT_DATA;
+    }
+
+    // read the data
+
+    strncpy(data,uareaobj.UFDT[fd]->ptrinode->Buffer + uareaobj.UFDT[fd]->ReadOffset,size);
+
+    uareaobj.UFDT[fd]->ReadOffset = uareaobj.UFDT[fd]->ReadOffset + size;
+    
+    return size;
+
+}
+
+/////////////////////////////////////////////////////////////////////////
+//
 // Entry point function of CVFS project
 //
 /////////////////////////////////////////////////////////////////////////
 
 int main()
 {
+    // Input Command
     char str[80] = {'\0'};
+
+    // Tokenised Command
     char Command[5][20] = {{'\0'}};
-    int iRet = 0, iCount = 0;
+
+    // Data for write system call
+    char InputBuffer[MAXFILESIZE] = {'\0'};
+
+    int iRet = 0, iCount = 0, size = 0;
+
+    char * EmptyBuffer = NULL;
 
     StartAuxillaryDataInitialisation();
 
@@ -598,6 +886,54 @@ int main()
             {
                 LsFile_All();
             }
+            // Marvellous CVFS : > stat Ganesh.txt
+            else if(strcmp(Command[0],"stat") == 0)
+            {
+                iRet = stat_file(Command[1]);
+
+                if(iRet == ERR_FILE_NOT_EXIST)
+                {
+                    printf("Error : File not exists\n");
+                }
+            }
+            // Marvellous CVFS : > unlink
+            else if(strcmp(Command[0],"unlink") == 0)
+            {
+                iRet = unlink_file(Command[1]);
+
+                if(iRet == ERR_FILE_NOT_EXIST)
+                {
+                    printf("Error : File not exists\n");
+                }
+            }
+            // Marvellous CVFS : > write 1
+            else if(strcmp(Command[0],"write") == 0)
+            {
+                printf("Enter the data that you want to write into file : \n");
+                fgets(InputBuffer,MAXFILESIZE,stdin);
+
+                size = strlen(InputBuffer);
+
+                iRet = write_file(atoi(Command[1]),InputBuffer,size-1);
+
+                if(iRet == ERR_INVALID_PARAMETER)
+                {
+                    printf("Error : Invalid Parameters\n");
+                    printf("Please man page for more information\n");
+                }
+                else if(iRet == ERR_PERMISSION_DENIED)
+                {
+                    printf("Error : There is no permission to write data\n");
+                }
+                else if(iRet == ERR_INSUFFICIENT_SPACE)
+                {
+                    printf("Error : There is no space to write the data\n");
+                }
+                else
+                {
+                    printf("%d bytes gets successfully written into the file \n",iRet);
+                }
+            }
             else
             {
                 printf("Command not found\n");
@@ -639,6 +975,50 @@ int main()
                 {
                     printf("File successfully created with FD : %d\n",iRet);
                 }
+            }
+            // Marvellous CVFS : > read 3 10
+            else if(strcmp(Command[0],"read") == 0)
+            {
+                EmptyBuffer = (char *)malloc(atoi(Command[2]));
+
+                iRet = read_file(atoi(Command[1]),EmptyBuffer,atoi(Command[2]));
+
+                if(iRet == ERR_INVALID_PARAMETER)
+                {
+                    printf("Error : Invalid Parameter \n");
+                }
+                else if(iRet == ERR_FILE_NOT_EXIST)
+                {
+                    printf("Error : File not exist \n");
+                }
+                else if(iRet == ERR_INSUFFICIENT_DATA)
+                {
+                    printf("Error : Insufficient data \n");
+                }
+                else if(iRet == ERR_INSUFFICIENT_SPACE)
+                {
+                    printf("Error : Insufficient space \n");
+                }
+                else if(iRet == ERR_PERMISSION_DENIED)
+                {
+                    printf("Error : IPermission denied \n");
+                }
+
+                else
+                {
+                    printf("Read operation is successfull\n");
+                    printf("Data from file is : \n");
+
+                    printf("%s\n",EmptyBuffer);
+
+                    free(EmptyBuffer);
+                }
+            }
+            else
+            {
+                printf("Command not found\n");
+                printf("Please refer help option to get more information\n");
+                printf("Please refer manual page of command using man\n");
             }
         }
         else if(iCount == 4)

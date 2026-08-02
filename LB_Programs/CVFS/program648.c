@@ -521,6 +521,84 @@ void LsFile_All()
 
 /////////////////////////////////////////////////////////////////////////
 //
+// Function Name : stat_file
+// Description :   it is used to Display all details of specific file
+// Input :         File name
+// Output :        exit status of function
+// Author :        Shreya Vilas Kulkarni
+// Date:           02/08/2026
+//
+/////////////////////////////////////////////////////////////////////////
+
+int stat_file(char name[])
+{
+    PINODE temp = NULL;
+    int permission = 0;
+    int Type = 0;
+
+    if(IsFileExist(name) == false)
+    {
+        return ERR_FILE_NOT_EXIST;
+    }
+
+    temp = head;
+
+    while(temp != NULL)
+    {
+        if(strcmp(temp->FileName,name) == 0)
+        {
+            printf("-----------------------------------------------------------------\n");
+            printf("-----------------Statistical Information of file-----------------\n");
+            printf("-----------------------------------------------------------------\n");
+
+            printf("File name : %s\n",temp->FileName);
+
+            printf("Inode number : %d\n",temp->InodeNumber);
+
+            printf("File size : %d\n",temp->FileSize);
+
+            printf("Actual file size : %d\n",temp->ActualFileSize);
+
+            printf("Reference count : %d\n",temp->ReferenceCount);
+
+            permission = temp->Premission;
+
+            if(permission == READ)
+            {
+                printf("File Permission : Read Only\n");
+            }
+            else if(permission == WRITE)
+            {
+                printf("File Permission : Write\n");
+            }
+            else if(permission == READ + WRITE)
+            {
+                printf("File Permission : Read + Write\n");
+            }
+
+            Type = temp->FileType;
+
+            if(Type == REGULARFILE)
+            {
+                printf("File Type : Regular File \n");
+            }
+            else if(Type == SPECIALFILE)
+            {
+                printf("File Type : Special File \n");
+            }
+
+            printf("-----------------------------------------------------------------\n");
+
+            break;
+        }
+        temp = temp->next;
+    }
+
+    return EXECUTE_SUCCESS;
+}
+
+/////////////////////////////////////////////////////////////////////////
+//
 // Entry point function of CVFS project
 //
 /////////////////////////////////////////////////////////////////////////
@@ -597,6 +675,16 @@ int main()
             else if((strcmp(Command[0],"ls") == 0) && (strcmp(Command[1],"-a") == 0))
             {
                 LsFile_All();
+            }
+            // Marvellous CVFS : > stat Ganesh.txt
+            else if(strcmp(Command[0],"stat") == 0)
+            {
+                iRet = stat_file(Command[1]);
+
+                if(iRet == ERR_FILE_NOT_EXIST)
+                {
+                    printf("Error : File not exists\n");
+                }
             }
             else
             {

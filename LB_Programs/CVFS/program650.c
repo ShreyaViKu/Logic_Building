@@ -318,6 +318,32 @@ void ManPageDisplay(char Name[])
         printf("About : It is used to clear the terminal \n");
         printf("Usage : clear \n");
     }
+    else if(strcmp(Name,"creat") == 0 )
+    {
+        printf("About : It is used to Create the new file \n");
+        printf("Usage : Create File_name Permission \n");
+
+        printf("File name : name of file that we want to create\n");
+        printf("Permission : Permission of new file \n");
+
+        printf("Permission : Read -> 1\n");
+        printf("Permission : Write -> 2\n");
+        printf("Permission : Read + Write -> 3\n");
+    }
+    else if(strcmp(Name,"unlink") == 0 )
+    {
+        printf("About : It is used to Delete the existing file \n");
+        printf("Usage : unlink File_name \n");
+
+        printf("File name : name of file that we want to delete\n");
+    }
+    else if(strcmp(Name,"stat") == 0 )
+    {
+        printf("About : It is used to get information of specific file \n");
+        printf("Usage : stat File_name Permission \n");
+
+        printf("File name : name of file whose information should be fetched\n");
+    }
     else
     {
         printf("No manual entry found for %s\n",Name);
@@ -521,6 +547,146 @@ void LsFile_All()
 
 /////////////////////////////////////////////////////////////////////////
 //
+// Function Name : stat_file
+// Description :   it is used to Display all details of specific file
+// Input :         File name
+// Output :        exit status of function
+// Author :        Shreya Vilas Kulkarni
+// Date:           02/08/2026
+//
+/////////////////////////////////////////////////////////////////////////
+
+int stat_file(char name[])
+{
+    PINODE temp = NULL;
+    int permission = 0;
+    int Type = 0;
+
+    if(IsFileExist(name) == false)
+    {
+        return ERR_FILE_NOT_EXIST;
+    }
+
+    temp = head;
+
+    while(temp != NULL)
+    {
+        if(strcmp(temp->FileName,name) == 0)
+        {
+            printf("-----------------------------------------------------------------\n");
+            printf("-----------------Statistical Information of file-----------------\n");
+            printf("-----------------------------------------------------------------\n");
+
+            printf("File name : %s\n",temp->FileName);
+
+            printf("Inode number : %d\n",temp->InodeNumber);
+
+            printf("File size : %d\n",temp->FileSize);
+
+            printf("Actual file size : %d\n",temp->ActualFileSize);
+
+            printf("Reference count : %d\n",temp->ReferenceCount);
+
+            permission = temp->Premission;
+
+            if(permission == READ)
+            {
+                printf("File Permission : Read Only\n");
+            }
+            else if(permission == WRITE)
+            {
+                printf("File Permission : Write\n");
+            }
+            else if(permission == READ + WRITE)
+            {
+                printf("File Permission : Read + Write\n");
+            }
+
+            Type = temp->FileType;
+
+            if(Type == REGULARFILE)
+            {
+                printf("File Type : Regular File \n");
+            }
+            else if(Type == SPECIALFILE)
+            {
+                printf("File Type : Special File \n");
+            }
+
+            printf("-----------------------------------------------------------------\n");
+
+            break;
+        }
+        temp = temp->next;
+    }
+
+    return EXECUTE_SUCCESS;
+}
+
+/////////////////////////////////////////////////////////////////////////
+//
+// Function Name : unlink_file
+// Description :   it is used to Delete the specific file
+// Input :         File name
+// Output :        exit status of function
+// Author :        Shreya Vilas Kulkarni
+// Date:           02/08/2026
+//
+/////////////////////////////////////////////////////////////////////////
+
+int unlink_file(
+                  char name[]    // name of file
+               )
+{
+    int i = 0;
+
+    if(IsFileExist(name) == false)
+    {
+        return ERR_FILE_NOT_EXIST;
+    }
+
+    for(i = 0; i< MAXOPENFILES; i++)
+    {
+        if(uareaobj.UFDT[i] != NULL)
+        {
+            if(strcmp(uareaobj.UFDT[i]->ptrinode->FileName,name) == 0)
+            {
+                // Deallocate memory of buffer 
+                free(uareaobj.UFDT[i]->ptrinode->Buffer);
+                uareaobj.UFDT[i]->ptrinode->Buffer = NULL;
+
+                strcpy(uareaobj.UFDT[i]->ptrinode->FileName,"\0");
+
+                uareaobj.UFDT[i]->ptrinode->FileSize = 0;
+
+                uareaobj.UFDT[i]->ptrinode->ActualFileSize = 0;
+
+                uareaobj.UFDT[i]->ptrinode->ReferenceCount = 0;
+
+                uareaobj.UFDT[i]->ptrinode->FileType = 0;
+
+                uareaobj.UFDT[i]->ptrinode->Premission = 0;
+
+                // Deallocate memory of file table
+                free(uareaobj.UFDT[i]);
+
+                uareaobj.UFDT[i] = NULL;
+
+                superobj.FreeInodes++;   // free inode increment
+
+                break;   // IMPORTANT
+
+            }
+        }  // end of outer if
+        
+    }   // end of for
+
+    return EXECUTE_SUCCESS;
+
+} // end of unlink_file
+
+/////////////////////////////////////////////////////////////////////////
+//
 // Entry point function of CVFS project
 //
 /////////////////////////////////////////////////////////////////////////
@@ -597,6 +763,26 @@ int main()
             else if((strcmp(Command[0],"ls") == 0) && (strcmp(Command[1],"-a") == 0))
             {
                 LsFile_All();
+            }
+            // Marvellous CVFS : > stat Ganesh.txt
+            else if(strcmp(Command[0],"stat") == 0)
+            {
+                iRet = stat_file(Command[1]);
+
+                if(iRet == ERR_FILE_NOT_EXIST)
+                {
+                    printf("Error : File not exists\n");
+                }
+            }
+            // Marvellous CVFS : > unlink
+            else if(strcmp(Command[0],"unlink") == 0)
+            {
+                iRet = unlink_file(Command[1]);
+
+                if(iRet == ERR_FILE_NOT_EXIST)
+                {
+                    printf("Error : File not exists\n");
+                }
             }
             else
             {
