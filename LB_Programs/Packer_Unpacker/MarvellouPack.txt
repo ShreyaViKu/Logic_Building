@@ -1,1 +1,0 @@
-A.txt 10                                                                                            AAAAAAAAAAB.txt 20                                                                                            BBBBBBBBBBBBBBBBBBBBC.txt 30                                                                                            CCCCCCCCCCCCCCCCCCCCCCCCCCCCCC
