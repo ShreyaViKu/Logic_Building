@@ -8,7 +8,7 @@ import javax.swing.*;
 
 class unpacking
 {
-    public boolean unpackfile(String filename)throws Exception
+    public boolean unpackfile(String filename,String dkey)throws Exception
     {
         char key = 'A';
         int iRet = 0, i =0;
@@ -27,6 +27,12 @@ class unpacking
 
         if(fileobj.exists() && fileobj.isFile())
         {
+            // if key is not same
+            if((dkey.length() != 1) || (dkey.charAt(0) != key))
+            {
+                return false;
+            }
+            
             fiobj = new FileInputStream(fileobj);
 
             while((iRet = fiobj.read(header,0,100)) != -1)
@@ -77,18 +83,26 @@ class program735X
         JFrame frame = new JFrame("Unpacking Tool");
 
         JLabel filename = new JLabel("Packed File : ");
+        JLabel key = new JLabel("Key : ");
 
         JTextField fileField = new JTextField(50);
+        JTextField keyfield  = new JTextField(10);
 
         JButton unpackButton = new JButton("UNPACK");
 
-        filename.setBounds(30, 80, 100, 30);
-        fileField.setBounds(130, 80, 300, 30);
+        filename.setBounds(30, 50, 100, 30);
+        fileField.setBounds(130, 50, 300, 30);
 
-        unpackButton.setBounds(190, 140, 100, 40);
+        key.setBounds(30, 100, 100, 30);
+        keyfield.setBounds(130, 100, 150, 30);
+
+        unpackButton.setBounds(190, 160, 100, 40);
 
         frame.add(filename);
         frame.add(fileField);
+
+        frame.add(key);
+        frame.add(keyfield);
 
         frame.add(unpackButton);
 
@@ -102,17 +116,18 @@ class program735X
         unpackButton.addActionListener(e ->
             {
                 String pfile = fileField.getText();
+                String dkey = keyfield.getText();
 
-                if(pfile.isEmpty())
+                if(pfile.isEmpty() || dkey.isEmpty())
                 {
-                    JOptionPane.showMessageDialog(frame, "Please enter packed file name");
+                    JOptionPane.showMessageDialog(frame, "Please enter packed file name and decryption key");
                     return;
                 }
                 try
                 {
                     unpacking uobj = new unpacking();
 
-                    boolean result = uobj.unpackfile(pfile);
+                    boolean result = uobj.unpackfile(pfile,dkey);
 
                     if(result == true)
                     {
@@ -120,7 +135,7 @@ class program735X
                     }
                     else
                     {
-                        JOptionPane.showMessageDialog(frame, "File does not exist");
+                        JOptionPane.showMessageDialog(frame, "File does not exist or key mismatch");
                     }
 
                 }
