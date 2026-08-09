@@ -344,6 +344,13 @@ void ManPageDisplay(char Name[])
 
         printf("File name : name of file whose information should be fetched\n");
     }
+    else if(strcmp(Name,"lseek") == 0 )
+    {
+        printf("About : lseek() repositions the file offset of the open file description associated with the file descriptor fd to the argument offset according to the directive whence \n");
+        printf("Usage : lseek fd offset when\n");
+
+        printf("File name : name of file whose information should be fetched\n");
+    }
     else
     {
         printf("No manual entry found for %s\n",Name);
@@ -803,6 +810,101 @@ int read_file(  int fd,
 
 /////////////////////////////////////////////////////////////////////////
 //
+// Function Name : TakeBackUp
+// Description :   it is used to take backup of
+//                 all files from ram to HDD
+// Input :         None
+// Output :        number of bytes successfully read
+// Author :        Shreya Vilas Kulkarni
+// Date:           02/08/2026
+//
+/////////////////////////////////////////////////////////////////////////
+
+void TakeBackUp()
+{
+    PINODE temp = NULL;
+    temp = head;
+
+    int fd = 0;
+
+    while(temp != NULL)
+    {
+        if(temp->FileType != 0)
+        {
+            printf("File Name : %s\n", temp->FileName);
+            printf("Buffer Address : %p\n", temp->Buffer);
+            printf("Buffer Content : %s\n", temp->Buffer);
+            printf("Actual Size : %d\n", temp->ActualFileSize);
+
+            fd = creat(temp->FileName,0777);
+
+            write(fd,temp->Buffer,temp->ActualFileSize);
+
+            close(fd);
+        }
+
+        temp = temp->next;
+    }
+}
+
+/////////////////////////////////////////////////////////////////////////
+//
+// Function Name : lseek_file
+// Description :   it is used to change the offset in file
+// Input :         file descriptor
+//                 offset number of bytes to move
+//                 from where
+// Output :        new file offset
+// Author :        Shreya Vilas Kulkarni
+// Date:           03/08/2026
+//
+/////////////////////////////////////////////////////////////////////////
+
+int lseek_file(int fd, int offset, int when)
+{
+    int NewOffset = 0;
+
+    if(when<START || when>END)
+    {
+        return ERR_INVALID_PARAMETER;
+    }
+    if(fd<0 || fd > MAXOPENFILES)
+    {
+        return ERR_INVALID_PARAMETER;
+    }
+    if(uareaobj.UFDT[fd] == NULL)
+    {
+        return ERR_FILE_NOT_EXIST;
+    }
+    if(offset < 0 || offset >uareaobj.UFDT[fd]->ptrinode->ActualFileSize)
+    {
+        return ERR_INVALID_PARAMETER;
+    }
+
+    if(when == START)
+    {
+        NewOffset = offset;
+    }
+    else if(when == CURRENT)
+    {
+        NewOffset = uareaobj.UFDT[fd]->ReadOffset + offset;
+    }
+    else if(when == END)
+    {
+        NewOffset = uareaobj.UFDT[fd]->ptrinode->ActualFileSize - offset;
+    }
+
+    if(NewOffset > uareaobj.UFDT[fd]->ptrinode->ActualFileSize || NewOffset < 0)
+    {
+        return ERR_INVALID_PARAMETER;
+    }
+
+    uareaobj.UFDT[fd]->ReadOffset = NewOffset;
+
+    return uareaobj.UFDT[fd]->ReadOffset;
+}
+/////////////////////////////////////////////////////////////////////////
+//
 // Entry point function of CVFS project
 //
 /////////////////////////////////////////////////////////////////////////
@@ -819,6 +921,7 @@ int main()
     char InputBuffer[MAXFILESIZE] = {'\0'};
 
     int iRet = 0, iCount = 0, size = 0;
+    char ch = '\0';
 
     char * EmptyBuffer = NULL;
 
@@ -847,6 +950,16 @@ int main()
             // Marvellous CVFS : > exit
             if(strcmp(Command[0],"exit") == 0)
             {
+                printf("Do you want to take backup of all files created ? y/n : \n");
+                scanf("%c",&ch);
+
+                if(ch == 'y' || ch == 'Y')
+                {
+                    TakeBackUp();
+                    
+                    printf("Backup is taken Successfully in the same directory\n");
+                }
+
                 printf("Thank you for using Marvellous CVFS\n");
                 printf("Deallocating all resources of Marvellous CVFS\n");
                 break;
@@ -982,7 +1095,7 @@ int main()
             // Marvellous CVFS : > read 3 10
             else if(strcmp(Command[0],"read") == 0)
             {
-                EmptyBuffer = (char *)malloc(atoi(Command[2]) + 1 );
+                EmptyBuffer = (char *)malloc(atoi(Command[2]) + 1);
 
                 iRet = read_file(atoi(Command[1]),EmptyBuffer,atoi(Command[2]));
 
@@ -1026,7 +1139,25 @@ int main()
         }
         else if(iCount == 4)
         {
-            
+            if(strcmp(Command[0], "lseek") == 0 )
+            {
+                iRet = lseek_file(atoi(Command[1]),atoi(Command[2]),atoi(Command[3]));
+
+                if(iRet == ERR_INVALID_PARAMETER)
+                {
+                    printf("Parameter passed is not valid\n");
+                    printf("please check man page of lseek for details\n");
+                }
+                if(iRet == ERR_FILE_NOT_EXIST)
+                {
+                    printf("file does not exists for this fd\n");
+                    printf("Plaese check files with ls -a\n");
+                }
+                else
+                {
+                    printf("Read offset changes to %d\n",iRet);
+                }
+            }
         }
         else
         {

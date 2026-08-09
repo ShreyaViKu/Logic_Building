@@ -1,0 +1,40 @@
+import java.io.*;
+import java.util.*;
+
+class program729
+{
+    public static void main(String[] args) throws Exception
+    {
+        String PackFileName = null;
+        String strHeader = null;
+
+        Scanner sobj = new Scanner(System.in);
+        File fpackobj = null;
+        FileInputStream fiobj = null;
+
+        byte Header[] = new byte[100];
+
+        System.out.println("Enter name of packed file : ");
+        PackFileName = sobj.nextLine();
+
+        fpackobj = new File(PackFileName);
+
+        if(fpackobj.exists())
+        {
+            fiobj = new FileInputStream(fpackobj);
+
+            fiobj.read(Header,0,100);
+
+            strHeader = new String(Header);
+
+            System.out.println("Header is : "+strHeader);
+
+        }
+        else
+        {
+            System.out.println("there is no such pack file");
+        }
+        
+    }
+    
+}

@@ -1,0 +1,44 @@
+/*
+File write with fileoutputstream
+foobj.write(Data);  // Error
+*/
+import java.io.*;
+import java.util.*;
+
+class program680
+{
+    public static void main(String[] args) throws Exception
+    {
+        String Fname = null;
+        int iRet = 0;
+        File fobj = null;
+        FileInputStream fiobj = null;
+          
+        Scanner sobj = new Scanner(System.in);
+
+        System.out.println("Enter file name : ");
+        Fname = sobj.nextLine();
+
+        fobj = new File(Fname);
+
+        fiobj = new FileInputStream(fobj);
+
+        byte Buffer[] = new byte[50];
+
+        if(fobj.exists())
+        {
+            String str = null;
+
+            while((iRet = fiobj.read(Buffer)) != -1)
+            {
+                str = new String(Buffer);
+                System.out.println(Buffer);
+            }
+        }
+        else
+        {
+            System.out.println("there is no such file");
+        }
+
+    }
+}
